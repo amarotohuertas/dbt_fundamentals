@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: One record per order
+    columns:
+      - name: order_id
+        description: Primary key
+        data_tests:
+          - unique
+          - not_null
