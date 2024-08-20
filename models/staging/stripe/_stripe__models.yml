@@ -5,21 +5,24 @@ models:
       description: This model cleans up payment data
       columns:
       - name: payment_id
-        description: Primary key
+        description: Primary key for payments table.
         data_tests:
           - unique
           - not_null
       - name: order_id
+        description: Foreign key column to relationship with orders table primary key.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_jaffle_shop__orders')
               field: order_id
       - name: payment_method
+        description: "{{ doc('payments_payment_method') }}"
         data_tests:
           - accepted_values:
               values: ['credit_card', 'coupon', 'bank_transfer', 'gift_card']
       - name: status
+        description: "{{ doc('payments_status') }}"
         data_tests:
           - accepted_values:
               values: ['success', 'fail']
