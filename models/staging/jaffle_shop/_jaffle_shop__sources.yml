@@ -23,7 +23,7 @@ sources:
               - unique
               - not_null
         freshness: 
-          error_after: {count: 7, period: day}
-          warn_after: {count: 14, period: day}
+          warn_after: {count: 30, period: day}
+          error_after: {count: 60, period: day}
         loaded_at_field: _etl_loaded_at
         
