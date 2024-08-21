@@ -9,6 +9,6 @@ sources:
       - name: payment
         description: One record per order.
         freshness: 
-          warn_after: {count: 7, period: day}
-          error_after: {count: 14, period: day}
+          warn_after: {count: 30, period: day}
+          error_after: {count: 60, period: day}
         loaded_at_field: _batched_at
