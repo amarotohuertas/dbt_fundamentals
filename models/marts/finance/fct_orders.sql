@@ -10,7 +10,7 @@ with
     order_payments as (
         select
             order_id,
-            sum(case when status = 'success' then amount end) as amount
+            sum(case when payment_status = 'success' then payment_amount end) as amount
         from payments
         group by 1
     ),

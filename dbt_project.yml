@@ -39,5 +39,9 @@ models:
   dbt_learn:
     marts:
       materialized: table
+    intermediate:
+      materialized: view
+    legacy:
+      materialized: view
     staging:
       materialized: view
