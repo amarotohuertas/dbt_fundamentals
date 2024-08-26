@@ -1,90 +1,69 @@
+with
+
 -- Import CTEs
 
-with
 customers as (
     select * from {{ ref('stg_jaffle_shop__customers') }}
 ),
 
-orders as (
+paid_orders as (
     select * from {{ ref('int_orders') }}
 ),
 
----
+-- Logical CTEs
 
-customer_orders as (
 
-    select
-
-        orders.*,
-        customers.full_name,
-        customers.surname,
-        customers.givenname,
-
-        -- Customer level aggregations
-        min(orders.order_date) over (
-            partition by orders.customer_id
-        ) as customer_first_order_date,
-        
-        min(orders.valid_order_date) over (
-            partition by orders.customer_id
-        ) as customer_first_non_returned_order_date,
-        
-        max(orders.valid_order_date) over (
-            partition by orders.customer_id
-        ) as customer_most_recent_non_returned_order_date,
-        
-        count(*) over (
-            partition by orders.customer_id
-        ) as customer_order_count,
-        
-        sum(nvl2(orders.valid_order_date, 1, 0)) over (
-            partition by orders.customer_id
-        ) as customer_non_returned_order_count,
-        
-        sum(nvl2(orders.valid_order_date, orders.order_value_dollars, 0))
-            over (partition by orders.customer_id)
-        as customer_total_lifetime_value,
-        
-        array_agg(distinct orders.order_id) over (
-            partition by orders.customer_id
-        ) as customer_order_ids
-
-    from orders
-    inner join customers
-        on customers.customer_id = orders.customer_id
-
-),
-
-add_avg_order_values as (
-
-    select
-
-        *,
-        customer_total_lifetime_value/customer_non_returned_order_count as customer_avg_non_returned_order_value
-
-    from customer_orders
-
-),
+-- Final CTE
 
 final as (
 
     select
 
-        order_id,
-        customer_id,
-        surname,
-        givenname,
-        customer_first_order_date as first_order_date,
-        customer_order_count as order_count,
-        customer_total_lifetime_value as total_lifetime_value,
-        order_value_dollars,
-        order_status,
-        payment_status
+        paid_orders.order_id,
+        paid_orders.customer_id,
+        paid_orders.order_placed_at,
+        paid_orders.order_status,
+        paid_orders.total_amount_paid,
+        payment_finalized_date,
+        customers.givenname as customer_first_name,
+        customers.surname as customer_last_name,
 
-    from add_avg_order_values
+        -- sales transaction sequence
+        row_number() over (order by paid_orders.order_placed_at, paid_orders.order_id) as transaction_seq,
+        
+        -- customer sales sequences
+        paid_orders.customer_sales_seq,
+
+        -- new vs returning customer
+        case
+            when (
+            rank() over(
+                partition by paid_orders.customer_id
+                order by paid_orders.order_placed_at, paid_orders.order_id
+                ) = 1
+            ) then 'new'
+            else 'return'
+        end as nvsr,
+
+        -- cumulative running total of rows
+        sum(paid_orders.total_amount_paid) over (
+            partition by paid_orders.customer_id 
+            order by paid_orders.order_id
+        ) as customer_lifetime_value,
+        
+        -- first day of sale
+        first_value(paid_orders.order_placed_at) over (
+            partition by paid_orders.customer_id
+            order by paid_orders.order_placed_at
+        ) as fdos
+
+    from paid_orders
+    left join customers
+        on paid_orders.customer_id = customers.customer_id
+    order by paid_orders.order_id
 
 )
 
--- Simple Select Statement
+-- Simple select statement
 
-select * from final
+select * from final --where customer_id = 54
