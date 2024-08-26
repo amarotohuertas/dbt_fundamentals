@@ -15,7 +15,7 @@ sources:
               - unique
               - not_null
       - name: orders
-        description: Raw oders data. One record per order. Includes cancelled and deleted orders.
+        description: Raw orders data. One record per order. Includes cancelled and deleted orders.
         columns:
           - name: id
             description: Primary key for orders data.
