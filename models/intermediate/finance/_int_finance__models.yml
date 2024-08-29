@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: int_orders
+    description: Tabla intermedia que une pedidos y pagos para crear fct_customer_orders.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        data_tests:
+          - not_null
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+          - not_null
+  - name: int_orders_old
+    description: Tabla intermedia que une pedidos y pagos para crear fct_customer_orders_old.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        data_tests:
+          - not_null
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+          - not_null
+          
+              

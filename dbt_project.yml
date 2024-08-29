@@ -37,11 +37,22 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   dbt_learn:
-    marts:
-      materialized: table
-    intermediate:
-      materialized: view
-    legacy:
-      materialized: view
     staging:
       materialized: view
+    intermediate:
+      materialized: ephemeral
+    legacy:
+      schema: legacy
+      materialized: view
+    utilities:
+      materialized: table
+    marts:
+      materialized: table
+      finance:
+        schema: finance
+      marketing:
+        schema: marketing
+
+    
+    
+    
