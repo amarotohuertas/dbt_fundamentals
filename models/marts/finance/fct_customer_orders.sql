@@ -10,8 +10,26 @@ paid_orders as (
     select * from {{ ref('int_orders') }}
 ),
 
--- Logical CTEs
+employees as (
+    select * from {{ ref('employees') }}
+),
 
+-- Logical CTEs
+employee_customers as (
+
+    select
+
+        customers.customer_id,
+        customers.givenname as customer_first_name,
+        customers.surname as customer_last_name,
+        employees.employee_id is not null as is_employee,
+        employees.email as employee_email
+
+    from customers
+    left join employees
+        on customers.customer_id = employees.customer_id 
+
+),
 
 -- Final CTE
 
@@ -25,9 +43,11 @@ final as (
         paid_orders.order_status,
         paid_orders.total_amount_paid,
         payment_finalized_date,
-        customers.givenname as customer_first_name,
-        customers.surname as customer_last_name,
-
+        employee_customers.customer_first_name,
+        employee_customers.customer_last_name,
+        employee_customers.is_employee,
+        employee_customers.employee_email,
+        
         -- sales transaction sequence
         row_number() over (order by paid_orders.order_placed_at, paid_orders.order_id) as transaction_seq,
         
@@ -58,8 +78,8 @@ final as (
         ) as fdos
 
     from paid_orders
-    left join customers
-        on paid_orders.customer_id = customers.customer_id
+    left join employee_customers
+        on paid_orders.customer_id = employee_customers.customer_id
     order by paid_orders.order_id
 
 )
