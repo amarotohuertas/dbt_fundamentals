@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: customer_orders
+    description: Ejemplo en bruto para refactorizar e incluir en nuestro modelo.
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_tests:
+          - not_null
+  - name: customer_orders_old
+    description: Ejemplo en bruto realizado por el formador del curso e incluir en nuestro modelo.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+      - name: customer_id
+        data_tests:
+          - not_null
+  - name: customers_daily_summary
+    description: Ejemplo de uso de función jina incluido en dbt_utils (surrogate_keys)
+    columns:
+      - name: id
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_tests:
+          - not_null

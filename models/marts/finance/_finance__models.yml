@@ -2,10 +2,68 @@ version: 2
 
 models:
   - name: fct_orders
-    description: One record per order
+    description: Complete orders model including the amount associated with each order.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "amount >= 0"
     columns:
       - name: order_id
         description: Primary key
         data_tests:
           - unique
           - not_null
+      - name: customer_id
+        description: Foreign key to stg_jaffle_shop__customers.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_jaffle_shop__customers')
+              field: customer_id
+      - name: amount
+        description: Dollars spent per order
+        data_tests:
+          - assert_dollars_spent_are_greather_than_one:
+              group_by_column: customer_id
+          - dbt_expectations.expect_column_values_to_be_between: 
+          # this will perform what the dbt_utils.expression-is-true test does!
+              min_value: 0
+              row_condition: "order_id is not null" 
+              strictly: false
+          - dbt_expectations.expect_column_mean_to_be_between: 
+          # this will perform what our singular and generic tests do!
+              min_value: 1
+              group_by: [customer_id] 
+              row_condition: "order_id is not null" # (Optional)
+              strictly: false
+
+  - name: fct_customer_orders
+    description: Objeto final tras refactorizar customer_orders.
+    columns:
+      - name: order_id
+        description: Primary key
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Foreign key to stg_jaffle_shop__customers.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_jaffle_shop__customers')
+              field: customer_id
+
+  - name: fct_customer_orders_old
+    description: Objeto final tras refactorizar customer_orders_old.
+    columns:
+      - name: order_id
+        description: Primary key
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Foreign key to stg_jaffle_shop__customers.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_jaffle_shop__customers')
+              field: customer_id
