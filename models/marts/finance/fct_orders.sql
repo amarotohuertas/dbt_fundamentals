@@ -1,5 +1,6 @@
 with
     
+-- References
 orders as (
     select * from {{ ref('stg_jaffle_shop__orders') }}
 ),
@@ -8,6 +9,7 @@ payments as (
     select * from {{ ref('stg_stripe__payments') }}
 ),
 
+-- Logical CTEs
 order_payments as (
     select
         order_id,
@@ -16,6 +18,7 @@ order_payments as (
     group by 1
 ),
 
+-- Final query
 final as (
     select
         orders.order_id,
