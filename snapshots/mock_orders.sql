@@ -1,4 +1,4 @@
-{% snapshot mock_orders %}
+{% snapshot stg_jaffle_shop__mock_orders %}
 
 {% set new_schema = target.schema + '_snapshot' %}
 
@@ -13,6 +13,6 @@
         )
     }}
 
-    select * from analytics.{{ target.schema }}.mock_orders
+    select * from analytics.{{ target.schema }}.stg_jaffle_shop__mock_orders
 
  {% endsnapshot %}

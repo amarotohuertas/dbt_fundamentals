@@ -26,4 +26,11 @@ sources:
           warn_after: {count: 30, period: day}
           error_after: {count: 60, period: day}
         loaded_at_field: _etl_loaded_at
-        
+      - name: mock_orders
+        description: Tabla que contiene ejemplos para ejecutar un snapshot.
+        columns:
+          - name: order_id
+            description: Primary key for orders data.
+            data_tests:
+              - unique
+              - not_null
