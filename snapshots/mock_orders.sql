@@ -1,4 +1,4 @@
-{% snapshot stg_jaffle_shop__mock_orders %}
+{% snapshot mock_orders %}
 
 {% set new_schema = target.schema + '_snapshot' %}
 
@@ -13,6 +13,6 @@
         )
     }}
 
-    select * from analytics.{{ target.schema }}.stg_jaffle_shop__mock_orders
+    select * from {{ source('jaffle_shop', 'mock_orders') }}
 
  {% endsnapshot %}
