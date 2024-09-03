@@ -30,7 +30,7 @@ sources:
         description: Tabla que contiene ejemplos para ejecutar un snapshot.
         columns:
           - name: order_id
-            description: Primary key for orders data.
+            description: Primary key for mock_orders data.
             data_tests:
               - unique
               - not_null
