@@ -7,7 +7,10 @@ models:
       - name: payment_id
         description: Primary key for payments table.
         data_tests:
-          - unique
+          - unique:
+              config:
+                warn_if: ">10"
+                error_if: ">100"
           - not_null
       - name: order_id
         description: Foreign key column to relationship with orders table primary key.
@@ -21,8 +24,14 @@ models:
         data_tests:
           - accepted_values:
               values: ['credit_card', 'coupon', 'bank_transfer', 'gift_card']
+          - unique:
+              config:
+                where: "payment_method = 'success'"
       - name: payment_status
         description: "{{ doc('payments_status') }}"
         data_tests:
           - accepted_values:
               values: ['success', 'fail']
+              config:
+                limit: 10
+                store_failures: true
