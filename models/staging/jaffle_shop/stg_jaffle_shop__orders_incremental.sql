@@ -11,10 +11,15 @@ source as (
     select
         *, _etl_loaded_at as load_date
     from {{ source('jaffle_shop', 'orders') }}
+
+    -- this filter will only be applied on an incremental run
     {% if is_incremental %}
-        where load_date >= (
-        select dateadd(day, -3, max(load_date)::date) from {{ this }}
-        )
+        where load_date >= 
+        -- During the last 3 days
+        --(select dateadd(day, -3, max(load_date)::date) from {{ this }})
+
+        -- (uses >= to include records arriving later on the same day as the last run of this model)
+        (select coalesce(max(load_date), '1900-01-01') from {{ this }})
     {% endif %}
 ),
 
