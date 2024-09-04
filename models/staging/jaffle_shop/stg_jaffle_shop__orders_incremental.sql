@@ -1,3 +1,4 @@
+-- Incremental materialization
 {{
     config(
         materialized = 'incremental',
